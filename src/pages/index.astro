@@ -1,0 +1,363 @@
+---
+import '../styles/global.css';
+import {
+	ArrowUpRight,
+	Bookmark,
+	Brain,
+	Clock,
+	ExternalLink,
+	Flame,
+	Globe,
+	Newspaper,
+	Radio,
+	Search,
+	Star,
+	Zap,
+} from '@lucide/astro';
+import {
+	categories,
+	readingFlow,
+	sources,
+	watchSignals,
+	type SourceCategory,
+	type SourceLanguage,
+	type SourcePriority,
+} from '../data/sources';
+
+const categoryOrder: SourceCategory[] = [
+	'briefs',
+	'media',
+	'deep-dive',
+	'research',
+	'official',
+	'products',
+	'chinese',
+];
+
+const groupedSources = categoryOrder.map((category) => ({
+	key: category,
+	...categories[category],
+	items: sources.filter((source) => source.category === category),
+}));
+
+const priorityLabel: Record<SourcePriority, string> = {
+	daily: '每日必看',
+	weekly: '每周深读',
+	reference: '一手校验',
+};
+
+const languageLabel: Record<SourceLanguage, string> = {
+	zh: '中文',
+	en: '英文',
+	mixed: '混合',
+};
+
+const categoryIcons = {
+	briefs: Radio,
+	media: Newspaper,
+	'deep-dive': Brain,
+	research: Search,
+	official: Star,
+	products: Zap,
+	chinese: Globe,
+} satisfies Record<SourceCategory, typeof Radio>;
+
+const heroStats = [
+	{ value: '20', label: '分钟每日流程' },
+	{ value: '7', label: '信息源分层' },
+	{ value: '21', label: '精选入口' },
+];
+
+const templateRows = [
+	['类型', '模型 / 工具 / 论文 / 开源 / 投融资 / 政策 / 国内产业'],
+	['一句话要点', '今天这条信息到底改变了什么'],
+	['为什么重要', '影响开发、产品、投资、效率还是认知框架'],
+	['对我有什么用', '试用、深读、收藏、转发或忽略'],
+	['可信度', '一手源 / 媒体报道 / 社区传言'],
+];
+---
+
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<meta
+			name="description"
+			content="AI Hot 是一个中文 AI 新闻与知识入口，帮助你每天 20 分钟筛选全球最新、最热、最值得深读的 AI 信息。"
+		/>
+		<title>AI Hot | 全球 AI 热点与知识入口</title>
+	</head>
+	<body class="text-ink antialiased">
+		<header class="fixed left-0 right-0 top-0 z-30 border-b border-white/20 bg-ink/80 text-paper-soft backdrop-blur-xl">
+			<div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+				<a href="#top" class="magazine-title text-xl leading-none">AI Hot</a>
+				<nav class="hidden items-center gap-6 text-xs font-medium uppercase tracking-[0.22em] text-paper-soft/80 md:flex">
+					<a class="transition hover:text-white" href="#sources">Sources</a>
+					<a class="transition hover:text-white" href="#signals">Signals</a>
+					<a class="transition hover:text-white" href="#capture">Capture</a>
+				</nav>
+				<a
+					href="#sources"
+					class="inline-flex h-9 items-center gap-2 rounded-md border border-paper-soft/30 px-3 text-sm font-semibold text-paper-soft transition hover:border-cyan hover:text-white"
+				>
+					<Radio size={16} aria-hidden="true" />
+					<span>今日入口</span>
+				</a>
+			</div>
+		</header>
+
+		<main id="top">
+			<section class="noise relative min-h-[620px] overflow-hidden bg-ink pt-14 text-paper-soft sm:min-h-[680px] lg:min-h-[720px]">
+				<img
+					src="/assets/ai-hot-cover.png"
+					alt="AI 新闻桌面、世界地图网格、研究卡片和信息流组成的杂志风视觉"
+					class="absolute inset-0 h-full w-full object-cover opacity-72"
+					loading="eager"
+				/>
+				<div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(23,21,19,0.94)_0%,rgba(23,21,19,0.78)_42%,rgba(23,21,19,0.32)_100%)]"></div>
+				<div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-paper to-transparent"></div>
+
+				<div class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-20 sm:px-6 sm:pt-24 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:pb-24 lg:pt-28">
+					<div class="reveal max-w-3xl">
+						<div class="mb-6 flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-cyan">
+							<span class="inline-flex h-8 items-center rounded-md border border-cyan/55 bg-cyan/10 px-3">Global AI Radar</span>
+							<span class="text-paper-soft/55">Updated reading stack</span>
+						</div>
+						<h1 class="magazine-title max-w-4xl text-[3.1rem] leading-[0.96] text-paper-soft sm:text-[5rem] lg:text-[6.8rem]">
+							AI Hot
+						</h1>
+						<p class="mt-5 max-w-2xl text-xl leading-9 text-paper-soft/86 sm:text-2xl">
+							全球 AI 热点与知识入口。每天 20 分钟，把快讯、深度、论文、产品和中文源压缩成一张可执行的信息看板。
+						</p>
+						<div class="mt-8 flex flex-col gap-3 sm:flex-row">
+							<a
+								href="#sources"
+								class="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-cyan px-5 text-base font-bold text-ink transition hover:bg-paper-soft"
+							>
+								<Zap size={18} aria-hidden="true" />
+								<span>打开今日信息流</span>
+							</a>
+							<a
+								href="#capture"
+								class="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-paper-soft/45 px-5 text-base font-bold text-paper-soft transition hover:border-red hover:text-white"
+							>
+								<Bookmark size={18} aria-hidden="true" />
+								<span>收藏记录模板</span>
+							</a>
+						</div>
+					</div>
+
+					<div class="reveal reveal-delay-1 self-end">
+						<div class="grid grid-cols-3 border-y border-paper-soft/35 py-5">
+							{
+								heroStats.map((stat) => (
+									<div class="border-r border-paper-soft/25 px-4 last:border-r-0">
+										<div class="magazine-title text-4xl text-paper-soft sm:text-5xl">{stat.value}</div>
+										<div class="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-paper-soft/64">{stat.label}</div>
+									</div>
+								))
+							}
+						</div>
+						<div class="mt-7 max-w-xl border-l-4 border-red bg-ink/54 p-5 backdrop-blur">
+							<div class="flex items-center gap-2 text-sm font-bold text-red">
+								<Flame size={18} aria-hidden="true" />
+								<span>今日判断原则</span>
+							</div>
+							<p class="mt-3 text-lg leading-8 text-paper-soft/82">
+								社媒可以做雷达，结论必须回到官方博客、论文、GitHub、产品页和真实用户反馈。
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="relative -mt-10 px-4 sm:px-6 lg:px-8" aria-labelledby="flow-title">
+				<div class="mx-auto max-w-7xl border border-rule bg-paper-soft shadow-[0_24px_70px_rgba(58,45,30,0.12)]">
+					<div class="grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
+						<div class="border-b border-rule p-6 sm:p-8 lg:border-b-0 lg:border-r">
+							<p class="text-xs font-bold uppercase tracking-[0.22em] text-red">Daily Briefing</p>
+							<h2 id="flow-title" class="magazine-title mt-3 text-3xl leading-tight sm:text-4xl">每天 20 分钟</h2>
+							<p class="mt-4 max-w-md leading-8 text-ink-muted">
+								用固定节奏把信息流变成判断力：先广扫，再验证，最后只深读一条。
+							</p>
+						</div>
+						<div class="grid sm:grid-cols-2">
+							{
+								readingFlow.map((item, index) => (
+									<article class="min-h-44 border-b border-rule p-6 last:border-b-0 sm:border-r sm:[&:nth-child(2n)]:border-r-0 sm:[&:nth-last-child(-n+2)]:border-b-0">
+										<div class="flex items-center justify-between gap-4">
+											<span class="font-mono text-sm font-bold text-cyan">{item.time}</span>
+											<Clock size={18} aria-hidden="true" class="text-ink-muted" />
+										</div>
+										<h3 class="mt-5 text-xl font-bold">{index + 1}. {item.title}</h3>
+										<p class="mt-3 leading-7 text-ink-muted">{item.body}</p>
+									</article>
+								))
+							}
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section id="sources" class="px-4 py-20 sm:px-6 lg:px-8 lg:py-24" aria-labelledby="sources-title">
+				<div class="mx-auto max-w-7xl">
+					<div class="mb-10 grid gap-6 lg:grid-cols-[0.78fr_1.22fr] lg:items-end">
+						<div>
+							<p class="text-xs font-bold uppercase tracking-[0.22em] text-cyan">Curated Sources</p>
+							<h2 id="sources-title" class="magazine-title mt-3 text-4xl leading-tight sm:text-5xl">精选 AI 信息源</h2>
+						</div>
+						<p class="max-w-2xl text-lg leading-8 text-ink-muted lg:justify-self-end">
+							按使用场景分层：每日只看高优先级入口；周末补深度；遇到重大消息再回到一手官方源校验。
+						</p>
+					</div>
+
+					<div class="space-y-12">
+						{
+							groupedSources.map((group) => {
+								const Icon = categoryIcons[group.key];
+								return (
+									<section class="reveal reveal-delay-2">
+										<div class="mb-4 flex flex-col gap-3 border-t-2 border-ink pt-4 sm:flex-row sm:items-center sm:justify-between">
+											<div class="flex items-center gap-3">
+												<span
+													class:list={[
+														'inline-flex h-10 w-10 items-center justify-center rounded-md border',
+														group.accent === 'cyan' && 'border-cyan bg-cyan/10 text-cyan',
+														group.accent === 'red' && 'border-red bg-red/10 text-red',
+														group.accent === 'ink' && 'border-ink bg-ink text-paper-soft',
+													]}
+												>
+													<Icon size={20} aria-hidden="true" />
+												</span>
+												<div>
+													<h3 class="text-2xl font-black">{group.label}</h3>
+													<p class="text-sm text-ink-muted">{group.deck}</p>
+												</div>
+											</div>
+											<span class="font-mono text-sm font-bold text-ink-muted">{group.items.length.toString().padStart(2, '0')} sources</span>
+										</div>
+
+										<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+											{
+												group.items.map((source) => (
+													<a
+														href={source.url}
+														target="_blank"
+														rel="noreferrer"
+														class="source-card group flex min-h-60 flex-col rounded-md border border-rule bg-paper-soft p-5 transition duration-300"
+													>
+														<div class="flex items-start justify-between gap-4">
+															<div>
+																<div class="flex flex-wrap gap-2">
+																	<span
+																		class:list={[
+																			'rounded-md px-2.5 py-1 text-xs font-bold',
+																			source.priority === 'daily' && 'bg-cyan/15 text-cyan',
+																			source.priority === 'weekly' && 'bg-red/12 text-red',
+																			source.priority === 'reference' && 'bg-ink/10 text-ink',
+																		]}
+																	>
+																		{priorityLabel[source.priority]}
+																	</span>
+																	<span class="rounded-md bg-white/60 px-2.5 py-1 text-xs font-semibold text-ink-muted">
+																		{languageLabel[source.language]}
+																	</span>
+																</div>
+																<h4 class="mt-5 text-2xl font-black leading-tight">{source.title}</h4>
+															</div>
+															<ArrowUpRight
+																size={22}
+																aria-hidden="true"
+																class="shrink-0 text-ink-muted transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-red"
+															/>
+														</div>
+														<p class="mt-4 flex-1 leading-7 text-ink-muted">{source.why}</p>
+														<div class="mt-6 flex items-center justify-between border-t border-rule pt-4 text-sm font-bold">
+															<span>{source.cadence}</span>
+															<span class="inline-flex items-center gap-1 text-red">
+																打开
+																<ExternalLink size={15} aria-hidden="true" />
+															</span>
+														</div>
+													</a>
+												))
+											}
+										</div>
+									</section>
+								);
+							})
+						}
+					</div>
+				</div>
+			</section>
+
+			<section id="signals" class="bg-ink px-4 py-20 text-paper-soft sm:px-6 lg:px-8" aria-labelledby="signals-title">
+				<div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
+					<div>
+						<p class="text-xs font-bold uppercase tracking-[0.22em] text-cyan">Heat Signals</p>
+						<h2 id="signals-title" class="magazine-title mt-3 text-4xl leading-tight sm:text-5xl">热度观察区</h2>
+						<p class="mt-5 max-w-lg text-lg leading-8 text-paper-soft/70">
+							看到爆款标题时，先问四个问题。能通过这些信号的内容，才值得进入收藏和深读。
+						</p>
+					</div>
+					<div class="grid gap-4 sm:grid-cols-2">
+						{
+							watchSignals.map((signal, index) => (
+								<article class="min-h-44 rounded-md border border-paper-soft/16 bg-paper-soft/[0.06] p-5">
+									<div class="flex items-center justify-between">
+										<span class="font-mono text-sm font-bold text-cyan">0{index + 1}</span>
+										<Flame size={18} aria-hidden="true" class="text-red" />
+									</div>
+									<p class="mt-8 text-lg font-semibold leading-8 text-paper-soft/88">{signal}</p>
+								</article>
+							))
+						}
+					</div>
+				</div>
+			</section>
+
+			<section id="capture" class="px-4 py-20 sm:px-6 lg:px-8 lg:py-24" aria-labelledby="capture-title">
+				<div class="mx-auto max-w-7xl">
+					<div class="print-rule h-2 w-full"></div>
+					<div class="grid gap-10 border-b border-rule py-10 lg:grid-cols-[0.86fr_1.14fr]">
+						<div>
+							<p class="text-xs font-bold uppercase tracking-[0.22em] text-red">Capture Template</p>
+							<h2 id="capture-title" class="magazine-title mt-3 text-4xl leading-tight sm:text-5xl">收藏记录模板</h2>
+							<p class="mt-5 max-w-md text-lg leading-8 text-ink-muted">
+								不要只收藏链接。把每条信息压成判断，第二天还能复盘它是不是真有价值。
+							</p>
+						</div>
+						<div class="rounded-md border border-rule bg-paper-soft">
+							{
+								templateRows.map(([label, value]) => (
+									<div class="grid border-b border-rule last:border-b-0 sm:grid-cols-[160px_1fr]">
+										<div class="bg-ink px-4 py-4 text-sm font-bold text-paper-soft sm:px-5">{label}</div>
+										<div class="px-4 py-4 leading-7 text-ink-muted sm:px-5">{value}</div>
+									</div>
+								))
+							}
+						</div>
+					</div>
+
+					<div class="grid gap-6 pt-10 md:grid-cols-3">
+						<div class="rounded-md border border-rule bg-paper-soft p-5">
+							<div class="text-sm font-bold text-red">今日只选三条</div>
+							<p class="mt-3 leading-7 text-ink-muted">少量高质量输入，比无边界刷信息更容易形成判断。</p>
+						</div>
+						<div class="rounded-md border border-rule bg-paper-soft p-5">
+							<div class="text-sm font-bold text-red">先验再结论</div>
+							<p class="mt-3 leading-7 text-ink-muted">重大消息至少找一手源或实测截图，别被转述带跑。</p>
+						</div>
+						<div class="rounded-md border border-rule bg-paper-soft p-5">
+							<div class="text-sm font-bold text-red">周末做归档</div>
+							<p class="mt-3 leading-7 text-ink-muted">每周把收藏按模型、产品、论文、机会重新分组。</p>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>
